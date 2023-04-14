@@ -29,7 +29,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, appReducer);
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     app: persistedReducer,
   },
@@ -37,6 +37,4 @@ const store = configureStore({
   devTools: process.env.NODE_ENV === "development",
 });
 
-const persistor = persistStore(store);
-
-export default { store, persistor };
+export const persistor = persistStore(store);
