@@ -8,7 +8,7 @@ const addContact = createAction("app/addContact", (contactData) => {
   return {
     payload: {
       id: uuidv4(),
-      name: contactData.name.toLowerCase(),
+      name: contactData.name,
       number: contactData.number,
     },
   };
