@@ -2,6 +2,7 @@ label {
     display: flex;
     flex-direction: column;
     max-width: 200px;
+    margin: 5px 10px;
   }
   button {
     margin: 5px 10px;

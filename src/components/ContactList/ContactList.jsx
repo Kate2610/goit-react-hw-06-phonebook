@@ -1,40 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
+import { useSelector } from 'react-redux';
+import { getContacts, getFilter } from 'redux/contacts/selectors';
+import ContactItem from 'components/ContactItem/ContactItem';
+import s from './ContactList.module.css';
 
-const ContactList = ({ contacts, del }) => {
-  const deleteId = (id) => {
-    del(id);
-  };
+export default function ContactList() {
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
-  const createList = () => {
-    return contacts.map((contact) => {
-      return (
-        <li key={uuidv4()} id={contact.id}>
-          {`${contact.name}: ${contact.number}`}
-          <button data-id={contact.id} onClick={() => deleteId(contact.id)}>
-            Delete
-          </button>
-        </li>
-      );
-    });
-  };
+  const contactsFiltered = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
-  return <ul>{createList()}</ul>;
-};
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })).isRequired,
-  del: PropTypes.func.isRequired,
-};
-
-ContactList.defaultProps = {
-  contacts: [],
-};
-
-export default ContactList;
+  if (contactsFiltered) {
+    return (
+      <ul>
+        {contactsFiltered.map(({ id, name, number }) => (
+          <li className={s.li} key={id}>
+            <ContactItem id={id} name={name} number={number} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
