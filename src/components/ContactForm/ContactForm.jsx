@@ -18,7 +18,7 @@ export default function ContactForm() {
     const existingContact = contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase());
 
     if (existingContact) {
-      alert(`${name} is already in contacts`);
+      alert(`${name} already exists`);
     } else {
       dispatch(
         addContacts({
