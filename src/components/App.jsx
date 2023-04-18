@@ -1,42 +1,57 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import ContactForm from "./ContactForm/ContactForm";
 import ContactList from "./ContactList/ContactList";
 import Filter from "./Filter/Filter";
 import appActions from "../redux/app/app-actions";
-import { connect } from "react-redux";
 
-class App extends Component {
-  
-  filterArr = (fArr) => {
+const App = () => {
+  const contacts = useSelector((state) => state.app.contacts);
+  const filter = useSelector((state) => state.app.filter);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(appActions.filterSet(""));
+  }, [dispatch]);
+
+  const filterArr = (fArr, filter) => {
     let newArr = fArr.filter((cur) =>
-      cur.name.toUpperCase().includes(this.props.filter)
+      cur.name.toUpperCase().includes(filter.toUpperCase())
     );
     return newArr;
   };
 
-  render() {
-    return (
-      <div className="App">
-        <h1>Phonebook</h1>
-        <ContactForm onSubmitData={this.props.formSubmitHandler} />
-        <h1>Contacts</h1>
-        <Filter setFilterToState={this.props.filterSet} />
-        <ContactList
-          contacts={this.filterArr(this.props.contacts)}
-          del={this.props.contactDelete}
-        />
-      </div>
-    );
+ const handleSubmit = (contactData) => {
+
+  const existingContact = contacts.find(
+    (contact) => contact.name.toLowerCase() === contactData.name.toLowerCase()
+  );
+
+  if (existingContact) {
+    alert(`Contact with name "${existingContact.name}" already exists in phonebook`);
+  } else {
+    
+    dispatch(appActions.addContact(contactData));
   }
-}
-const mapStateToProps = (state) => ({
-  contacts: state.app.contacts,
-  filter: state.app.filter,
-});
-const mapDispatchToProrps = (dispatch) => ({
-  formSubmitHandler: (contactData) =>
-    dispatch(appActions.addContact(contactData)),
-  contactDelete: (contactId) => dispatch(appActions.deleteContact(contactId)),
-  filterSet: (str) => dispatch(appActions.filterSet(str)),
-});
-export default connect(mapStateToProps, mapDispatchToProrps)(App);
+};
+
+  const handleDelete = (contactId) => {
+    dispatch(appActions.deleteContact(contactId));
+  };
+
+  const handleFilterChange = (value) => {
+    dispatch(appActions.filterSet(value));
+  };
+
+  return (
+    <div className="App">
+      <h1>Phonebook</h1>
+      <ContactForm onSubmitData={handleSubmit} />
+      <h2>Contacts</h2>
+      <Filter setFilterValue={handleFilterChange} filterValue={filter} />
+      <ContactList contacts={filterArr(contacts, filter)} del={handleDelete} />
+    </div>
+  );
+};
+
+export default App;
